@@ -1,95 +1,54 @@
-# Megumi Raid Nightmare Macro 👹
+# Megumi Raid Macro: User Guide
 
-An advanced, production-grade automated computer vision macro specifically tailored for **Roblox Anime Raids** (calibrated for the Megumi/Mahoraga Nightmare encounter). 
+## Before you start
 
-Built using Python, **OpenCV**, and multi-threaded processing, this script monitors your screen in real time to handle boss triggers, loop restarts, character anti-stalls, and slot re-equipping flawlessly without lagging your game loop.
+- Use Windows and keep the game visible on the desktop while the macro runs.
+- Put the game at the same screen size and position you plan to use during the run.
+- Keep the supplied game screenshots/templates unchanged; the macro uses them to recognize the Retry button, boss banners, timer, and hotbar slots.
+- Run the macro only when you are ready for it to send mouse and keyboard input.
 
----
+## Start the macro
 
-## ✨ Features
-*   **Intelligent Boss Detection:** Differentiates between **Megumi** and **Mahoraga** banners using precise template matching score comparisons.
-*   **Dynamic UI Setup Window:** Includes a full configuration interface (`tkinter`) on startup to adjust timing, keys, switches, and pixel bounds without digging into code.
-*   **Natural Mouse Gliding:** Uses a custom mathematical **Smootherstep interpolation algorithm** to glide your cursor smoothly instead of teleporting it (helps stay under anti-cheat thresholds).
-*   **Independent Auto-Equip Engine:** Runs a lightning-fast dedicated thread to watch your hotbar. If a weapon or slot drops unequipped, it forces it back active.
-*   **Anti-Stall Timer Reset:** Automatically senses when a run goes past the time limit (e.g., `22:00`), instantly inputting `Esc + R + Enter` to force a map reset.
-*   **Always-On-Top Dashboard:** Spawns a floating window displaying active statistics (**Completed Loops** and **Total Uptime**).
+1. Open the `fast` folder.
+2. Double-click `Run_Macro.bat`.
+3. On first run, the launcher checks for Python and tries to install it if it is missing, then installs or updates the macro's Python packages.
+4. If Windows asks for permission to install Python, approve it. If automatic installation is unavailable, install Python 3 from python.org, enable the option to add Python to PATH, then run the batch file again.
+5. The settings window opens. Configure it, then choose **Save & Run**.
 
----
+## Configure the settings
 
-## 🛠️ Prerequisites & Installation
+- **Resolution:** select your display resolution, or use **Detect my screen**. This also sets the suggested image scale.
+- **Fullscreen / Halfscreen:** choose the layout you actually use. Changing this setting does not move or resize scan areas.
+- **Skills:** select the keys the macro should use for Megumi and Mahoraga. Middle click is available as a skill option.
+- **Game window title:** leave `Roblox` unless your game window has a different exact title.
+- **Scan areas:** these screen-coordinate boxes tell the macro where to look for the Retry button, boss banner, timer, and hotbar. Defaults are for the original setup. If your layout differs, use **Grab** to capture the two opposite corners for each area; follow the dialog's corner labels.
+- **Timing:** adjust the wait before clicking Retry, before starting the Megumi combo, before its skill spam, the number of Retry clicks, and the spacing between timer-reset keys.
+- **Features:** enable or disable the Megumi combo, Mahoraga skill spam, automatic hotbar equip, timer reset, stats window, and colored console output.
+- **Skip this window next time:** enable this after setup to reuse saved settings. To open settings again, open Command Prompt in the `fast` folder and run `py -3 Megumi_Raid_Nightmare.py --settings`.
 
-### 1. Install Python
-Make sure you have **Python 3.8+** installed on your system. 
+Use **Reset to defaults** if you want to discard the current edits. Settings are saved when **Save & Run** is pressed. The launcher checks that required images exist and that scan boxes are large enough before starting.
 
-### 2. Install Dependencies
-Open your command prompt or terminal and run the following command to download the required computer vision and input libraries:
+## What happens while it runs
 
-```bash
-pip install mss opencv-python numpy pyautogui pydirectinput
-```
+- The macro scans for Retry, enabled boss banners, the configured timer image, and hotbar slot states.
+- When Retry is detected, it pauses its other routines, moves to the button, clicks it the configured number of times, and returns the cursor to its home spot.
+- When an enabled boss banner is detected, it starts that boss's configured key routine.
+- If automatic equip is enabled, it checks slots 2 and 3 and presses a slot key when neither appears equipped.
+- When the timer image is confirmed, it sends **Esc**, **R**, and **Enter**, then repeats that sequence after a 4-second wait.
+- The stats window shows completed Retry loops and elapsed runtime. The console reports detections and warnings.
 
----
+## Stop or change settings
 
-## 📸 Image Template Configuration
+- Press **Ctrl+C** in the macro's console to stop it cleanly and release simulated keys.
+- To change settings, stop the macro, open Command Prompt in the `fast` folder, and run `py -3 Megumi_Raid_Nightmare.py --settings`.
+- Avoid closing the console while the macro is running; closing it ends the process.
 
-The macro checks your screen against small reference snapshot snippets. You **MUST** crop and place these exact `.png` assets inside the **same directory** where your script lives:
+## Troubleshooting
 
-| Filename | Description |
-| :--- | :--- |
-| `Retry.png` | The text/button indicating a round failure or completion replay. |
-| `Megumi.png` | The distinct boss banner name for "Defeat Megumi". |
-| `Mahoraga.png` | The distinct boss banner name for "Defeat Mahoraga". |
-| `timer.png` | The visual representation of the overtime/stuck counter (e.g., `22:00`). |
-| `Equipted2.png` / `Equipted3.png` | What your hotbar slots 2 and 3 look like when active. |
-| `UnEquipted2.png` / `UnEquipted3.png` | What your hotbar slots 2 and 3 look like when passive/holstered. |
+- **Python was not found:** run `Run_Macro.bat` again after Python installation. If automatic setup fails, install Python 3 from python.org with **Add Python to PATH** enabled.
+- **A required image is missing:** restore the macro's original image templates to the `fast` folder, then restart.
+- **It misses a button or banner:** check that the game resolution, window placement, image scale, and scan areas match the current screen. Use **Grab** to update scan-area corners.
+- **Keys go to another window:** make sure the game is open and not minimized, and check the exact game-window title in settings.
+- **It stops responding or behaves unexpectedly:** stop with Ctrl+C, reopen the macro, and check the console's last warning. If it happens repeatedly, note the warning and which game state was visible.
 
-> 💡 **Crucial Crop Tip:** Crop your assets using standard screenshot software matching your current game configuration. For best template alignment, capture images closely bounded around the text or borders.
-
----
-
-## 🚀 How to Run and Use
-
-### Step 1: Fire up the Script
-Execute the script from your command prompt:
-```bash
-python megumi_macro.py
-```
-
-### Step 2: Configure Your Layout via GUI
-The macro will launch an interactive settings dashboard. Follow these alignment parameters:
-1. **Choose/Input Resolution:** Select your monitor's display layout (or write yours inside the custom box). This scales the target template size automatically!
-2. **Assign Scan Areas via `Grab`:**
-   * Look at an item on your game layout (e.g., the *Retry Button*).
-   * Click **Grab** next to `Top-right corner`. You have **3 seconds** to hover your real mouse cursor directly over the top-right corner of that button. 
-   * Repeat the click for the `Bottom-left corner` to enclose the target box cleanly.
-3. **Map Skill Routines:** Toggle which hotbar or click buttons (`Z, X, C, V, R, MMB`) should fire during the Megumi or Mahoraga combat phases.
-4. **Save & Run:** Press **Save & Run**. All definitions are written locally to a structural `settings.json` file so you don't have to fill it out next time.
-
-### Step 3: Modifying Configuration Later
-If you want to pull the settings panel back up down the road instead of passing straight into the loop automation, run:
-```bash
-python megumi_macro.py --settings
-```
-
----
-
-## ⌨️ Routine Actions Performed
-
-### 🟣 Megumi Phase
-When the macro reads a valid Megumi banner sequence:
-1. Pauses briefly (custom delay), then pulls focus cleanly over to the **Roblox** environment container.
-2. Assures hotbar status slots are safely drawn/held.
-3. Presses and holds `W` for 1.0 second to drive positioning forward.
-4. Taps your dash/movement trigger (`Q`) twice.
-5. Begins execution loops spamming your selected keys.
-
-### 🔴 Mahoraga Phase
-A high-intensity override routine:
-1. Immediately gains game frame windows prominence.
-2. Non-stop cycles input spams across all chosen combat hotkeys simultaneously to out-DPS the nightmare mechanics.
-
----
-
-## ⚠️ Important Failsafes & Exit
-* **How to Exit:** Focus on the command terminal execution screen and press **`Ctrl + C`** to break out of the scripts loops safely and pull down background thread tasks clean.
-* **QuickEdit Protection:** Windows command windows can occasionally hang operations if you click inside text logs. This script features low-level Windows API injections to programmatically strip QuickEdit locks on startup to stop accidental system pauses.
+The macro uses automated input and image matching, so game updates, UI changes, and display scaling can affect detection. Follow the game's rules when using automation.
