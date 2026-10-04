@@ -1,64 +1,86 @@
-# Megumi Raid Macro: User Guide
+# Calamity Cleaver
 
-## Before you start
+Auto-raid macro for **Jujutsu Zero** (Nayoa Calamity). It watches the screen for six images, replays the raid for you, and keeps a win counter. If you die it retries straight away.
 
-- Use Windows and keep the game visible on the desktop while the macro runs.
-- Put the game at the same screen size and position you plan to use during the run.
-- Keep the supplied game screenshots/templates unchanged; the macro uses them to recognize the Retry button, boss banners, timer, and hotbar slots.
-- Run the macro only when you are ready for it to send mouse and keyboard input.
+## Quick start
 
-## Start the macro
+1. Put `Calamity_Cleaver.bat` in its own folder.
+2. Double-click it. If Python or a library is missing it installs it (needs internet). Once everything is installed, later launches skip this and nothing gets upgraded.
+3. The settings window opens. Set your search areas (see **Grab**), pick your options, press **SAVE & LAUNCH**.
+4. The macro starts. Keep Roblox visible and in focus.
 
-1. Open the `fast` folder.
-2. Double-click `Megumi_Raid_Nightmare.bat`.
-3. Each launch checks for Python and tries to install it if it is missing, then upgrades pip and the required Python packages before starting the macro. It updates dependencies, not the macro's source code.
-4. If Windows asks for permission to install Python, approve it. If automatic installation is unavailable, install Python 3 from python.org, enable the option to add Python to PATH, then run the batch file again.
-5. The settings window opens. Configure it, then choose **Save & Run**.
+The six PNG images are built into the `.bat` and get written next to it the first time it runs. Your settings are saved in `calamity_settings.json` and are pre-filled next time.
 
-## Configure the settings
+## Grab: setting the search areas
 
-- **Resolution:** select your display resolution, or use **Detect my screen**. This also sets the suggested image scale.
-- **Fullscreen / Halfscreen:** choose the layout you actually use. Changing this setting does not move or resize scan areas.
-- **Skills:** select the keys the macro should use for Megumi and Mahoraga. Middle click is available as a skill option.
-- **Game window title:** leave `Roblox` unless your game window has a different exact title.
-- **Scan areas:** these screen-coordinate boxes tell the macro where to look for the Retry button, boss banner, timer, and hotbar. Defaults are for the original setup. If your layout differs, use **Grab** to capture the two opposite corners for each area; follow the dialog's corner labels.
-- **Timing:** adjust the wait before clicking Retry, before starting the Megumi combo, before its skill spam, the number of Retry clicks, and the spacing between timer-reset keys.
-- **Features:** enable or disable the Megumi combo, Mahoraga skill spam, automatic hotbar equip, timer reset, stats window, and colored console output.
-- **Auto-rejoin:** enable it to rejoin and continue into a raid; no join link is required. If Roblox reopens directly into Kaizen, the macro continues from GameModes or Raid Selection. If it sees the Roblox launcher/search screen instead, it follows images 8–15 and searches for KAIZEN.
-- **Snap reopened Roblox:** enabled by default with Auto-rejoin. It searches the full configured scan areas for either Roblox titlebar theme image, then smoothly drags the titlebar to the configured drop point (default `0, 664`) to snap Roblox to the left half. Both titlebar scan regions and the drop point can be edited in settings.
-- **Rejoin settings:** adjust the image scan areas, character anchor, steering dead zone, portal search/movement timings, the 20-second Raids wait, search-page wait/scroll count/duration, raid-list scroll interval, and missing-hotbar timeout (5 minutes). From GameModes it selects Raids, waits, steers toward `Portal.png`, and continues when Raid Selection appears. The fallback types `KAIZEN`, presses Enter, waits 1.5 seconds, then continues. Rejoin clicks and scroll positioning use the same smooth glide as Retry. Image checks target a 0.05-second interval.
-- **Skip this window next time:** enable this after setup to reuse saved settings. To open settings again, open Command Prompt in the `fast` folder and run `Megumi_Raid_Nightmare.bat --settings`.
+Every image is only searched inside its own rectangle, so smaller rectangles scan faster.
 
-Use **Reset to defaults** if you want to discard the current edits. Settings are saved when **Save & Run** is pressed. The launcher checks that required images exist and that scan boxes are large enough before starting.
+1. Put Roblox on screen.
+2. Press **GRAB AREA** next to an image. The settings window minimises.
+3. When the banner says **BOTTOM-LEFT**, hover that corner of where the image shows up and wait 3 seconds.
+4. When it says **TOP-RIGHT**, hover that corner and wait 3 seconds.
+5. The window comes back with all four numbers filled in.
 
-## What happens while it runs
+The small **BL** and **TR** buttons grab just one corner. You can also type the numbers by hand.
+The box must be bigger than the image itself, so leave a little room around it.
 
-- The macro scans for Retry, enabled boss banners, the configured timer image, and hotbar slot states.
-- When Retry is detected, it pauses its other routines, moves to the button, clicks it the configured number of times, and returns the cursor to its home spot.
-- When an enabled boss banner is detected, it starts that boss's configured key routine.
-- If automatic equip is enabled, it checks slots 2 and 3 and presses a slot key when neither appears equipped.
-- When the timer image is confirmed, it sends **Esc**, **R**, and **Enter**, then repeats that sequence after a 4-second wait.
-- The stats window shows completed Retry loops, automatic rejoin sequences started, and elapsed runtime. A rejoin counts once when its sequence starts, not for every internal navigation retry.
-- The console reports detections and warnings.
+## What the macro does
 
-## Logs
+| Image | Meaning | Action |
+| --- | --- | --- |
+| Ready | Raid is starting | Glides to it, clicks 3 times, then presses your slot(s): 1, 2, or 1 then 2 if both are picked |
+| Lv. 13,000 Zen'in Elite | Raid started | Equips your slot and starts the attack rotation |
+| Chase took too long... | Phase 2 | Logged, rotation keeps going |
+| Raid Summary: Successful | Raid beaten | Loops +1, then looks for Retry |
+| Raid Summary: Failure | You died | Loops unchanged, then looks for Retry |
+| Retry | Only searched after a win or fail | Glides to it and clicks 5 times |
 
-- `fast/macro_activity.log` is appended during each run. It records applied settings, setting validation/save results, detections and clicks, rejoin steps, timeouts with last image-match scores, hotbar states, and a scan-health summary every minute. Detailed scan summaries and transient hotbar-confidence changes go to this file without flooding the console.
-- `fast/macro_errors.log` contains full exception tracebacks. Tracebacks are also copied into the activity log.
-- If something goes wrong, stop the macro and send both log files. The activity log records scan summaries rather than every negative check at 20 checks per second, keeping it usable while still showing what the macro was failing to recognize.
+All images except Retry are scanned non-stop, every 0.05 seconds. All mouse movement is a curved, eased glide sent as real mouse input, with a short hover before each click so Roblox registers it. Scanning pauses for the second or two the mouse is moving and clicking, so it stays smooth.
 
-## Stop or change settings
+## The raid counter
 
-- Press **Ctrl+C** in the macro's console to stop it cleanly and release simulated keys.
-- To change settings, stop the macro, open Command Prompt in the `fast` folder, and run `Megumi_Raid_Nightmare.bat --settings`.
-- Avoid closing the console while the macro is running; closing it ends the process.
+- **Loops** goes up by 1 every time *Raid Summary: Successful* is seen. A failure never counts.
+- It is shown in the small stats window (always on top, top-right of the screen), in the console window title, and in the console on every win.
+- **Time** starts when the macro launches and is shown next to it.
+- The counter starts at 0 on every launch. It is not saved between runs.
+- With **Loops: Amount** set, the macro stops by itself once it reaches that many wins. **Inf** runs until you stop it.
 
-## Troubleshooting
+## Settings
 
-- **Python was not found:** run `Megumi_Raid_Nightmare.bat` again after Python installation. If automatic setup fails, install Python 3 from python.org with **Add Python to PATH** enabled.
-- **A required image is missing:** restore the macro's original image templates to the `fast` folder, then restart.
-- **It misses a button or banner:** check that the game resolution, window placement, image scale, and scan areas match the current screen. Use **Grab** to update scan-area corners.
-- **Keys go to another window:** make sure the game is open and not minimized, and check the exact game-window title in settings.
-- **It stops responding or behaves unexpectedly:** stop with Ctrl+C and send `macro_activity.log` and `macro_errors.log`, along with which game state was visible.
+- **Search areas**: one rectangle per image (bottom-left X/Y and top-right X/Y).
+- **Attack rotation**: keys from `c f x r t v z y`, pressed in that order, over and over during a raid.
+- **Slots**: slot 1, slot 2 or both. With one slot, the macro presses it when the raid starts. With both, it runs one full pass of the attack rotation on a slot, swaps to the other slot, runs another pass, and keeps alternating.
+- **Heavenly restriction / Cursed technique / Weapon**: pick one restriction or none. Physical locks cursed techniques, Sorcerer locks weapons. Up to 2 selected per list. These are saved and shown in the console header, but they do not change what the macro presses.
+- **Loops**: an amount, or Inf.
+- **Stop key** (F1-F12): stops the macro; press it again to restart it. Loops and Time keep counting.
+- **Log clearer**: the console is wiped and redrawn every 5 to 30 minutes.
+- **Screen**: Half-Screen, Corner Screen or Full Screen. Smaller layouts also try smaller copies of the images, in case Roblox's UI shrinks.
+- **Resolution**: display only. It does nothing.
 
-The macro uses automated input and image matching, so game updates, UI changes, and display scaling can affect detection. Follow the game's rules when using automation.
+## Tips and fixes
+
+- **Nothing is detected**: check the search area covers where the image appears, and that it is bigger than the image. If the game looks different from the screenshots, replace the matching PNG next to the `.bat` with a fresh crop.
+- **Scanning feels slow**: shrink the search areas with GRAB AREA. Large areas cost the most.
+- **Keys or clicks do nothing**: run the `.bat` as administrator, and click into Roblox once so it has focus.
+- **Close the stats window** (or press Ctrl+C in the console) to stop the macro completely.
+
+## Auto rejoin (when the game kicks you)
+
+Roblox kicks you out now and then. The **Disconnected** box (Leave / Reconnect) is searched for all the time. The moment it shows up, **every other image search stops** and the rejoin protocol runs:
+
+1. Click **Leave** (the left button of the box)
+2. Click **Search** once, press Ctrl+A, type the game name (default `Jujutsu: Zero`, changeable in settings) and press Enter
+3. **Play** (big blue button) x3 -> **Gamemodes** x1 -> **Raids** x3 -> **Create** x3 -> **Projection** x3 -> **Calamity** x3
+4. **Modifiers** x1 -> **Weaken** x1 -> **Friends Only** x1 -> **Create** x3 -> **Start** x5
+
+It runs strictly in order, step 1 to 13. Each step only searches for its own image, glides the mouse to it, clicks, then waits for that button to leave the screen before the next step starts, so the two Create buttons can never be mixed up (Create is only searched at step 6 and step 12, and a hit is ignored if the other Create fits better at the same spot). The stats window shows `REJOINING step N/13`. If the Disconnected box is still there or comes back, it goes back to step 1. When Start has been clicked the normal macro carries on until the next kick.
+
+- Every rejoin image has its own search area with the same X/Y boxes and **GRAB AREA / BL / TR** buttons (inside the **AUTO REJOIN** card). **Fullscreen scan** overrides all of them.
+- The Disconnected box is scanned non-stop, so give it a small search area for the best speed.
+- The stats window shows `REJOINING` while it runs and counts the rejoins.
+- If a step image is not found, the log warns every 60 seconds. Click it yourself and the protocol carries on from there. The stop key aborts it.
+- Switch it off with **Auto rejoin: Off**.
+
+## Slots: key or click
+
+Under **SLOTS**, **How to equip a slot** can be **Press key** (presses 1 / 2) or **Click position**. With Click position you set an X/Y for slot 1 and slot 2 (**GRAB POINT**, then hover the slot for 3 seconds) and the mouse glides there and clicks it once. With a middle-mouse Lock On, the mouse glides back to where Ready was before it locks on.
