@@ -84,3 +84,10 @@ It runs strictly in order, step 1 to 13. Each step only searches for its own ima
 ## Slots: key or click
 
 Under **SLOTS**, **How to equip a slot** can be **Press key** (presses 1 / 2) or **Click position**. With Click position you set an X/Y for slot 1 and slot 2 (**GRAB POINT**, then hover the slot for 3 seconds) and the mouse glides there and clicks it once. With a middle-mouse Lock On, the mouse glides back to where Ready was before it locks on.
+
+## The log file (if something bugs)
+
+Every run writes `logs\session_<date>_<time>.log` (the last 10 are kept). It has your settings, every action with a time stamp, a heartbeat line every 30 seconds, and full error details if anything crashes. **Send me that file** when something goes wrong.
+
+- **Frozen scanner or stuck mouse action:** a WARN is printed and a thread dump (what every part of the macro is doing) is written to the log.
+- **Rejoin step stuck for 20 seconds:** the log gets the best match score for that image (and its rival, and the Disconnected box) next to the score it needs, and `logs\stuck_stepNN_area.png` (what the search box sees) plus `logs\stuck_stepNN_screen.png` (the whole screen) are saved. Send those too.
